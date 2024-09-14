@@ -10,6 +10,9 @@ window.mermaid = mermaid;
 const cXLSXReader = ref(null);
 const cLoaderPanel = ref(null);
 
+// for flags
+const flag_is_generating = ref(false);
+
 // for results
 const pma = ref(null);
 
@@ -64,6 +67,9 @@ function on_click_submit() {
   const cfg = get_params();
   console.log("* got cfg", cfg);
 
+  // disable all buttons
+  flag_is_generating.value = true;
+
   get_coe(rs, cfg);
 }
 
@@ -86,6 +92,9 @@ async function get_coe(rs, cfg) {
   } catch (error) {
     console.log(error);
   }
+
+  // ok, enable all buttons
+  flag_is_generating.value = false;
 }
 
 function draw_coe_data(data) {
@@ -194,8 +203,14 @@ async function demo_sample_data() {
   </div>
   <div class="param_panel">
     <button @click="demo_sample_data()"
+      :disabled="flag_is_generating"
       style="margin-right: 2em;">
-      <i class="fa fa-upload"></i>
+      <template v-if="flag_is_generating">
+        <i class="fa fa-spinner fa-spin"></i>
+      </template>
+      <template v-else>
+        <i class="fa fa-upload"></i>
+      </template>
       Generate Visual Explanation for Sample Data
     </button>
 
@@ -244,9 +259,16 @@ async function demo_sample_data() {
     </div>
 
     <button @click="on_click_submit"
+      :disabled="flag_is_generating"
       style="margin-left: 1em;">
-      <i class="fa fa-cogs"></i>
-      Generate Visual Explanation
+      <template v-if="flag_is_generating">
+        <i class="fa fa-spinner fa-spin"></i>
+        Generating...
+      </template>
+      <template v-else>
+        <i class="fa fa-cogs"></i>
+        Generate Visual Explanation
+      </template>
     </button>
 
     
